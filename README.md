@@ -1,6 +1,9 @@
 # garnish
 Functional, RESTful Flask middleware with an eye toward easy testing, 
 finely tuned low level middleware control, and low devopment cost.
+    
+Make creating Flask endpoints as easy as snapping together legos!
+    
 With the core functionality clocking in at only 42 lines non-whitespace code, it doesn't 
 get much more simple or lightweight than this.
 
