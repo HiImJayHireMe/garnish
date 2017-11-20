@@ -79,11 +79,11 @@ For a complete example, see `demo.py`
 | Data Processing Layer      | POST Data Processing Layer      | PUT Data Processing Layer       |
 | GET Output Formatter Layer | POST/PUT Output Formatter Layer | POST/PUT Output Formatter Layer |
 
- Each `Layer` consists of one or more `Task`s and a function that controls how the tasks are to be executed.  
+ Each `Layer` consists of one or more `Task`s and a function that controls how the tasks are to be executed.  A `Task` is merely a wrapper for a function.  The `Task` function in conjunction with the `Layer` function controls the data flow for that layer and allows fine-grained low-level tuning for `Endpoint` execution.
  
- The default is `SyncLayer` which instructs that each `Task` is to be executed sequentially and the data from one task flows directly into the next task.  However, you can define your own behavior by supplying any `Layer`-function you like -- a function that reduces over a list of callables.  
+ The most commonly used `Layer` is `SyncLayer` which instructs that each `Task` is to be executed sequentially and the data from one task flows directly into the next task.  However, you can define your own behavior by supplying any `Layer`-function you like -- a function that reduces over a list of callables.  
  
- For instance, if you a common step in your data processing pipeline included several IO bound tasks to fetch external data, a `ConcurrentFetchLayer` might look like this:
+ For instance, if a common step in your data processing pipeline included several IO bound tasks to fetch external data, a `ConcurrentFetchLayer` might look like this:
 
 ```python
 # concurrent_fetch.py
@@ -133,7 +133,7 @@ Now assembling your FibLayer is as easy as
 from myapp.endpoints.concurrent_fetch import ConcurrentFetchLayer
 
 def noop_prev(f):
-# subtle but important detail, the function works as both an adapter and reducer,
+# subtle but important detail, the `Layer` function works as both an adapter and reducer,
 # meaning you need to decide what to do with the results from the previous step.
 # in this case, we're summing over the results of the tasks and discarding the 
 # "noop" from the previous step
@@ -142,13 +142,11 @@ def noop_prev(f):
 FibLayer = ConcurrentFetchLayer(noop_prev(sum), FibTask(10), FibTask(20), FibTask(30))
 
 ```
-
 You're now ready to server up an endpoint to anyone who wants to know what the sum of the 10th, 20th, and 30th Fibonacci numbers are!
 
 ```
 class FibRoute(Route):
-    __url__ = '/fib'
-    
-    post = Endpoint(FibLayer,
-                    SyncLayer(Task(simplejson.dumps)))    
+    __url__ = 'fib/'
+
+    post = Endpoint(FibLayer, SyncLayer(Task(simplejson.dumps)))
 ```
