@@ -54,12 +54,13 @@ class Echo(Route):
                     SyncLayer(Task(simplejson.dumps)))
   
     get = Endpoint(
-    
                 # GET adapter layer
                 SyncLayer(Task(lambda r: r.view_args)),
                 
-                # GET data processing layer    
-                SyncLayer(Task(lambda x: (print(x), x)[1])),
+                # GET data processing layer -- (no-op in this case)
+                # this could be omitted but shown for sake of
+                # dataflow conceptual illustration   
+                SyncLayer(Task(lambda x: x)),
                 
                 # GET output formatting layer
                 SyncLayer(Task(dapply(gethomepage))))
@@ -78,7 +79,7 @@ class Echo(Route):
                 SyncLayer(Task(simplejson.dumps)))
 ```
 
-To complete your application, you only need to register your app and run!
+To complete your application, you only need to `garnish` your app and run!
 
 ```Python
 # myapp.py  
