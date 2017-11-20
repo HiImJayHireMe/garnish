@@ -42,21 +42,41 @@ class Echo(Route):
     """A simple echo endpoint"""
     __url__ = 'echo/<path:name>'
   
-    post = Endpoint(SyncLayer(Task(lambda r: r.data),
+    post = Endpoint(
+                    # POST/PUT adapter layer
+                    SyncLayer(Task(lambda r: r.data),
                               Task(lambda b: b.decode()),
                               Task(simplejson.loads)),
+                              
+                    # POST data processing layer
                     SyncLayer(Task(dapply(postheyname))),
+                    
+                    # POST/PUT output processing layer
                     SyncLayer(Task(simplejson.dumps)))
   
-    get = Endpoint(SyncLayer(Task(lambda r: r.view_args)),
-                   SyncLayer(Task(lambda x: (print(x), x)[1])),
-                   SyncLayer(Task(dapply(gethomepage))))
-  
-    put = Endpoint(SyncLayer(Task(lambda r: r.data),
-                             Task(lambda b: b.decode()),
-                             Task(simplejson.loads)),
-                   SyncLayer(Task(dapply(putheyname))),
-                   SyncLayer(Task(simplejson.dumps)))
+    get = Endpoint(
+    
+                # GET adapter layer
+                SyncLayer(Task(lambda r: r.view_args)),
+                
+                # GET data processing layer    
+                SyncLayer(Task(lambda x: (print(x), x)[1])),
+                
+                # GET output formatting layer
+                SyncLayer(Task(dapply(gethomepage))))
+
+    put = Endpoint(
+    
+                # POST/PUT data processing layer
+                SyncLayer(Task(lambda r: r.data),
+                          Task(lambda b: b.decode()),
+                          Task(simplejson.loads)),
+                          
+                # POST data processing layer
+                SyncLayer(Task(dapply(putheyname))),
+                
+                # POST/PUT output formatting layer
+                SyncLayer(Task(simplejson.dumps)))
 ```
 
 To complete your application, you only need to register your app and run!
