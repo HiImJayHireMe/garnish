@@ -1,7 +1,6 @@
 import types
 
 from flask import request
-import naga
 from naga import compose
 
 

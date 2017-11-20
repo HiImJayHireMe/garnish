@@ -34,9 +34,6 @@ def noop_prev(f):
 FibLayer = ConcurrentFetchLayer(lambda r, prev: sum(r),
                                 FibTask(10), FibTask(20), FibTask(30))
 
-FibList = ConcurrentFetchLayer(list,
-                               FibTask(10), FibTask(20), FibTask(30))
-
 
 def fib(n):
     i = a = b = 1
@@ -56,10 +53,3 @@ class FibRoute(Route):
                              Task(dapply(lambda n: int(n)))),
                    SyncLayer(Task(fib)),
                    SyncLayer(simplejson.dumps))
-
-# class FibList(Route):
-#     __url__ = 'fib/list'
-#
-#     post = Endpoint(SyncLayer(Task(constantly(None))),
-#                     FibLayer,
-#                     )
