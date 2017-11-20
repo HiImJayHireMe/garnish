@@ -4,7 +4,7 @@ finely tuned low level middleware control, and low devopment cost.
     
 Make creating Flask endpoints as easy as snapping together legos!
     
-With the core functionality clocking in at less than 50 lines code, it doesn't 
+With the core functionality clocking in at less than 50 lines of code, it doesn't 
 get much more simple or lightweight than this.
 
 ### Version
