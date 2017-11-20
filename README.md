@@ -43,16 +43,16 @@ class Echo(Route):
     __url__ = 'echo/<path:name>'
   
     post = Endpoint(
-                    # POST/PUT adapter layer
-                    SyncLayer(Task(lambda r: r.data),
-                              Task(lambda b: b.decode()),
-                              Task(simplejson.loads)),
-                              
-                    # POST data processing layer
-                    SyncLayer(Task(dapply(postheyname))),
-                    
-                    # POST/PUT output processing layer
-                    SyncLayer(Task(simplejson.dumps)))
+                # POST/PUT adapter layer
+                SyncLayer(Task(lambda r: r.data),
+                          Task(lambda b: b.decode()),
+                          Task(simplejson.loads)),
+                          
+                # POST data processing layer
+                SyncLayer(Task(dapply(postheyname))),
+                
+                # POST/PUT output processing layer
+                SyncLayer(Task(simplejson.dumps)))
   
     get = Endpoint(
     
