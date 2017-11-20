@@ -11,7 +11,7 @@ get much more simple or lightweight than this.
 Pre-alpha -- everything subject to change!  
 
 ### Requirements
-Python version: 3.6
+Python version: 3.6  
 Libraries:
   - Flask
   - naga
@@ -32,7 +32,6 @@ into reusable code blocks.
 
 ```Python
 # echo.py
-
 import simplejson
 from garnish import Route, Endpoint, SyncLayer, Task
 from garnish.lib.utils import dapply
@@ -43,16 +42,16 @@ class Echo(Route):
     __url__ = 'echo/<path:name>'
   
     post = Endpoint(
-                # POST/PUT adapter layer
-                SyncLayer(Task(lambda r: r.data),
-                          Task(lambda b: b.decode()),
-                          Task(simplejson.loads)),
-                          
-                # POST data processing layer
-                SyncLayer(Task(dapply(postheyname))),
-                
-                # POST/PUT output processing layer
-                SyncLayer(Task(simplejson.dumps)))
+                    # POST/PUT adapter layer
+                    SyncLayer(Task(lambda r: r.data),
+                              Task(lambda b: b.decode()),
+                              Task(simplejson.loads)),
+                              
+                    # POST data processing layer
+                    SyncLayer(Task(dapply(postheyname))),
+                    
+                    # POST/PUT output processing layer
+                    SyncLayer(Task(simplejson.dumps)))
   
     get = Endpoint(
     
@@ -83,8 +82,6 @@ To complete your application, you only need to register your app and run!
 
 ```Python
 # myapp.py  
-  
-
 from flask import Flask
 from endpoints.echo import Echo
 from garnish,garnish import garnish
@@ -137,7 +134,6 @@ Lets say you need your Fibonnaci server to crunch some numbers for you.  You nee
 
 ```python
 # fib.py
-
 import requests
 from myapp import config  
 
