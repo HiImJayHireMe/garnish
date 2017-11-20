@@ -19,7 +19,7 @@ def gethomepage(name):
 
 
 class Echo(Route):
-    __url__ = 'echo/<path:name>'
+    __url__ = ['echo/<path:name>', 'echo/']
 
     post = Endpoint(SyncLayer(Task(lambda r: r.data),
                               Task(lambda b: b.decode()),
@@ -27,9 +27,7 @@ class Echo(Route):
                     SyncLayer(Task(dapply(postheyname))),
                     SyncLayer(Task(simplejson.dumps)))
 
-    get = Endpoint(SyncLayer(Task(lambda r: r.view_args)),
-                   SyncLayer(Task(lambda x: (print(x), x)[1])),
-                   SyncLayer(Task(dapply(gethomepage))))
+    get = Endpoint(SyncLayer(Task(lambda r: r.view_args or {'name': None}), Task(dapply(gethomepage))))
 
     put = Endpoint(SyncLayer(Task(lambda r: r.data),
                              Task(lambda b: b.decode()),
