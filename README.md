@@ -147,7 +147,6 @@ class FibTask(Task):
             res = int(r.text)
             return res
 
-        # resource = lambda n: int(requests.get(config.fib_server_url.format(n=n)))
         super().__init__(partial(fib_resouce, n))
 
 ```
