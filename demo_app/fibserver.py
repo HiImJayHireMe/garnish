@@ -1,7 +1,7 @@
 from flask import Flask
 
 from demo_app.lib.fib import FibRoute
-from garnish.garnish import garnish
+from garnish.garnish_py.garnish import garnish
 
 FibRoute = FibRoute
 

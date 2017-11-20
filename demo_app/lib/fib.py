@@ -2,11 +2,10 @@ from functools import partial
 
 import requests
 import simplejson
-from naga import compose
 
 from demo_app.lib.layers.fetch import ConcurrentFetchLayer
-from garnish.garnish import Task, Route, Endpoint, SyncLayer
-from garnish.lib.utils import dapply, constantly
+from garnish.garnish_py.garnish import Task, Route, Endpoint, SyncLayer
+from garnish.garnish_py.lib import dapply
 
 
 class config:

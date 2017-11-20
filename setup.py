@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 setup(
-    name='garnish',
+    name='garnish-py',
     version='0.0.1',
     packages=['garnish', 'garnish.lib'],
     url='https://github.com/HiImJayHireMe/garnish/',

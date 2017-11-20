@@ -1,8 +1,8 @@
 import simplejson
 from flask import Flask, render_template
 
-from garnish.garnish import Route, Endpoint, SyncLayer, Task, garnish
-from garnish.lib.utils import dapply
+from garnish.garnish_py.garnish import Route, Endpoint, SyncLayer, Task, garnish
+from garnish.garnish_py.lib import dapply
 
 
 def epname(start):
