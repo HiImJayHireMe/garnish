@@ -48,6 +48,18 @@ def relative_url(path):
     return False
 
 
+class GarnishReducer:
+    def __init__(self, f):
+        self.f = f
+
+    def __call__(self, tasks, previous):
+        return self.f(tasks, previous)
+
+
 @decorator
 def dapply(f):
     return lambda d: f(**dict(d))
+
+
+def constantly(x):
+    return lambda *args, **kwargs: x

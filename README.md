@@ -66,3 +66,89 @@ if __name__ == '__main__':
 ```
 
 For a complete example, see `demo.py`
+
+
+### How it works - a brief tutorial
+  
+  Each Route consists of a `__url__` class member and one or more `REST` methods (`Endpoint` class).  Conceptually, each endpoint is composed of data transformation `Layer`s, as seen in the diagram below.
+
+#### Echo(Route) Diagram
+| Endpoint(GET)            | Endpoint(POST)                                 |  Endpoint(PUT)                               |
+|----------------------------|---------------------------------|---------------------------------|
+| GET Adapter Layer          | POST/PUT Adapter Layer          | POST/PUT Adapter Layer          |
+| Data Processing Layer      | POST Data Processing Layer      | PUT Data Processing Layer       |
+| GET Output Formatter Layer | POST/PUT Output Formatter Layer | POST/PUT Output Formatter Layer |
+
+ Each `Layer` consists of one or more `Task`s and a function that controls how the tasks are to be executed.  
+ 
+ The default is `SyncLayer` which instructs that each `Task` is to be executed sequentially and the data from one task flows directly into the next task.  However, you can define your own behavior by supplying any `Layer`-function you like -- a function that reduces over a list of callables.  
+ 
+ For instance, if you a common step in your data processing pipeline included several IO bound tasks to fetch external data, a `ConcurrentFetchLayer` might look like this:
+
+```python
+# concurrent_fetch.py
+from concurrent.futures import ThreadPoolExecutor
+from garnish.garnish import Layer
+
+class ConcurrentFetchLayer(Layer):
+    def __call__(self, *args, **kwargs):
+        def call(t):
+            return t.__call__()
+
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(call, self.tasks))
+
+        return self.f(results, *args, **kwargs)
+```
+
+You could then supply some sort of reducing function for your tasks.  
+
+Lets say you need your Fibonnaci server to crunch some numbers for you.  You need some Fibonnaci tasks.
+
+```python
+# fib.py
+
+import requests
+from myapp import config  
+
+class FibTask(Task):
+    def __init__(self, n):
+        # config.fib_server_url == "192.168.33.10/fib/{n}"
+
+        def fib_resouce(n):
+            url = config.fib_server_url.format(n=n)
+            r = requests.get(url)
+            res = int(r.text)
+            return res
+
+        # resource = lambda n: int(requests.get(config.fib_server_url.format(n=n)))
+        super().__init__(partial(fib_resouce, n))
+
+```
+
+Now assembling your FibLayer is as easy as
+
+```python
+# fib.py
+from myapp.endpoints.concurrent_fetch import ConcurrentFetchLayer
+
+def noop_prev(f):
+# subtle but important detail, the function works as both an adapter and reducer,
+# meaning you need to decide what to do with the results from the previous step.
+# in this case, we're summing over the results of the tasks and discarding the 
+# "noop" from the previous step
+    return lambda results, prev: f(results)
+
+FibLayer = ConcurrentFetchLayer(noop_prev(sum), FibTask(10), FibTask(20), FibTask(30))
+
+```
+
+You're now ready to server up an endpoint to anyone who wants to know what the sum of the 10th, 20th, and 30th Fibonacci numbers are!
+
+```
+class FibRoute(Route):
+    __url__ = '/fib'
+    
+    post = Endpoint(FibLayer,
+                    SyncLayer(Task(simplejson.dumps)))    
+```

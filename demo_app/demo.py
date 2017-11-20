@@ -38,5 +38,8 @@ class Echo(Route):
                    SyncLayer(Task(simplejson.dumps)))
 
 
+from demo_app.lib.fib import FibRoute
+FibRoute = FibRoute
+
 if __name__ == '__main__':
-    garnish(Flask(__name__)).run(debug=True)
+    garnish(Flask(__name__)).run(debug=True, port=5000)

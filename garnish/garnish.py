@@ -1,13 +1,11 @@
 import types
 
 from flask import request
+import naga
 from naga import compose
 
 
 class Route:
-    f"""A Route is what flask hits as an endpoint.  Each rule should have a __url__ class member and
-    one or more class method composed of Endpoints with the rest method in lowercase.  See demo.Echo in demo.py"""
-
     methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE',
                'COPY', 'HEAD', 'OPTIONS', 'LINK', 'UNLINK',
                'PURGE', 'LOCK', 'UNLOCK', 'PROPFIND', 'VIEW']
@@ -27,7 +25,7 @@ class Task:
         return self.f(*args, **kwargs)
 
     def __repr__(self):
-        return f"{self.f.__name__}"
+        return f"{self.f}"
 
 
 class Layer:
@@ -60,5 +58,9 @@ class SyncLayer(Layer):
 
 def garnish(app):
     for rule in Route.__subclasses__():
-        app.add_url_rule(f'/{rule.__url__}', endpoint=rule.__url__, view_func=rule(), methods=rule.methods)
+        if isinstance(rule.__url__, (tuple, list)):
+            for url in rule.__url__:
+                app.add_url_rule(f'/{url}', endpoint=url, view_func=rule(), methods=rule.methods)
+        else:
+            app.add_url_rule(f'/{rule.__url__}', endpoint=rule.__url__, view_func=rule(), methods=rule.methods)
     return app
