@@ -4,15 +4,25 @@ finely tuned low level middleware control, and low devopment cost.
     
 Make creating Flask endpoints as easy as snapping together legos!
     
-With the core functionality clocking in at only 42 lines non-whitespace code, it doesn't 
+With the core functionality clocking in at less than 50 lines code, it doesn't 
 get much more simple or lightweight than this.
-
 
 ### Version
 Pre-alpha -- everything subject to change!  
 
+### Requirements
+Python version: 3.6
+Libraries:
+  - Flask
+  - naga
+
+
 ### Overview and Rationale
-Writing 
+I've found that writing Flask endpoints tends to be a very repetitive and not particularly elegant job.  So much `if request.method == 'POST': ...` and `@app.route('/blah' ...)`.  Even worse, it takes 4x or more the amount of time to write tests for your Flask endpoints.   
+
+Building on the magic of [schemagic.web](https://github.com/HiImJayHireMe/schemagic) -- which allows you to write `POST` functions as normal Python functions -- `garnish` has extended that functionality to allow you to write normal (and easily testable) Python functions and then compose them into endpoints.  
+
+Additionally, it allows fine-grained control of endpoint execution from dispatch to post processing.  
 
 ## Example Echo Endpoint
 
