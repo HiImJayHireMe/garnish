@@ -1,8 +1,11 @@
 import simplejson
 from flask import Flask, render_template
 
-from garnish.garnish_py.garnish import Route, Endpoint, SyncLayer, Task, garnish
-from garnish.garnish_py.lib import dapply
+from garnish.garnish import Route, Endpoint, SyncLayer, Task, garnish
+from garnish.lib.routes import SimpleRoute
+from garnish.lib.utils import dapply
+
+app = Flask(__name__)
 
 
 def epname(start):
@@ -19,7 +22,7 @@ def gethomepage(name):
 
 
 class Echo(Route):
-    __url__ = ['echo/<path:name>', 'echo/']
+    __url__ = '/echo/<path:name>'
 
     post = Endpoint(SyncLayer(Task(lambda r: r.data),
                               Task(lambda b: b.decode()),
@@ -37,7 +40,16 @@ class Echo(Route):
 
 
 from demo_app.lib.fib import FibRoute
+
 FibRoute = FibRoute
 
+
+class Repeat(SimpleRoute):
+    __url__ = '/repeat/<token>'
+
+    def get(self, token):
+        return simplejson.dumps(token)
+
+
 if __name__ == '__main__':
-    garnish(Flask(__name__)).run(debug=True, port=5000)
+    garnish(Flask(__name__), Echo, Repeat, FibRoute).run(debug=True, port=5000)

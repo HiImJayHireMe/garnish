@@ -2,14 +2,17 @@ from functools import partial
 
 import requests
 import simplejson
+from naga import first
 
 from demo_app.lib.layers.fetch import ConcurrentFetchLayer
-from garnish.garnish_py.garnish import Task, Route, Endpoint, SyncLayer
-from garnish.garnish_py.lib import dapply
+from garnish.garnish import Task, Route, Endpoint, SyncLayer
+from garnish.lib.utils import dapply
+
+from flask import request
 
 
 class config:
-    fib_server_url = "http://0.0.0.0:5001/fib/{n}"
+    fib_server_url = "http://0.0.0.0:5001/fib/?n={n}"
 
 
 class FibTask(Task):
@@ -44,11 +47,14 @@ def fib(n):
 
 
 class FibRoute(Route):
-    __url__ = ['fib/<path:n>', 'fib/']
+    __url__ = '/fib/'
 
-    post = Endpoint(FibLayer, SyncLayer(Task(simplejson.dumps)))
+    post = Endpoint(
+        FibLayer,
+        SyncLayer(Task(simplejson.dumps)))
 
-    get = Endpoint(SyncLayer(Task(lambda r: r.view_args),
-                             Task(dapply(lambda n: int(n)))),
-                   SyncLayer(Task(fib)),
-                   SyncLayer(simplejson.dumps))
+    get = Endpoint(
+        SyncLayer(Task(lambda r: dict(r.args)),
+                  Task(dapply(lambda n: int(first(n))))),
+        SyncLayer(Task(fib)),
+        SyncLayer(simplejson.dumps))

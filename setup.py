@@ -1,9 +1,10 @@
 from distutils.core import setup
+from setuptools import find_packages
 
 setup(
     name='garnish-py',
     version='0.0.1',
-    packages=['garnish', 'garnish.lib'],
+    packages=find_packages(where='./garnish_py'),
     url='https://github.com/HiImJayHireMe/garnish/',
     license='MIT License',
     author='jay',

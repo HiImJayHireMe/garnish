@@ -1,6 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 
-from garnish.garnish_py.garnish import Layer
+from garnish.garnish import Layer
 
 
 class ConcurrentFetchLayer(Layer):

@@ -55,11 +55,17 @@ class SyncLayer(Layer):
         super(SyncLayer, self).__init__(compose, *tasks)
 
 
-def garnish(app):
-    for rule in Route.__subclasses__():
-        if isinstance(rule.__url__, (tuple, list)):
-            for url in rule.__url__:
-                app.add_url_rule(f'/{url}', endpoint=url, view_func=rule(), methods=rule.methods)
+def garnish(app, *endpoints):
+    for endpoint in endpoints:
+        if isinstance(endpoint.__url__, (list, tuple)):
+            for url in endpoint.__url__:
+                print(f"Registering {endpoint.__name__}")
+                app.add_url_rule(url,
+                                 endpoint=endpoint.__name__,
+                                 view_func=endpoint())
         else:
-            app.add_url_rule(f'/{rule.__url__}', endpoint=rule.__url__, view_func=rule(), methods=rule.methods)
+            print(f"Registering {endpoint.__name__}")
+            app.add_url_rule(endpoint.__url__,
+                             endpoint=endpoint.__name__,
+                             view_func=endpoint())
     return app
